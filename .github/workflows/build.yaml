@@ -11,9 +11,9 @@ on:
 jobs:
   build:
     env:
-      MAPTILER_KEY: secrets.MAPTILER_KEY
+      MAPTILER_KEY: ${{ secrets.MAPTILER_KEY }}
       MAPTILER_STYLE: https://api.maptiler.com/maps/5f1fe5b0-fccf-4d8b-b8b6-c768b888dc6e/style.json
-      MAPBOX_ACCESS_TOKEN: secrets.MAPBOX_ACCESS_TOKEN
+      MAPBOX_ACCESS_TOKEN: ${{ secrets.MAPBOX_ACCESS_TOKEN }}
       BACKEND_HTTP_BASEURI: https://simwatch.aquavitale.ru
       BACKEND_WS_BASEURI: wss://simwatch.aquavitale.ru
 
