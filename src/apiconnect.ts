@@ -192,12 +192,7 @@ class APIConnect {
   }
 
   private _reconnect() {
-    const ssl = window.location.protocol.startsWith("https");
-    const hostname = window.location.host;
-    const proto = ssl ? "wss" : "ws";
-    const ep = APIConnect.WS_ENDPOINT.startsWith("ws://")
-      ? APIConnect.WS_ENDPOINT
-      : `${proto}://${hostname}${APIConnect.WS_ENDPOINT}`;
+    const ep = APIConnect.WS_ENDPOINT;
 
     this.emit("connect");
     this.ws = new WebSocket(ep);
