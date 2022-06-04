@@ -1,0 +1,43 @@
+name: build-simwatch-ui
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - master
+
+jobs:
+  build:
+    env:
+      MAPTILER_KEY: secrets.MAPTILER_KEY
+      MAPTILER_STYLE: https://api.maptiler.com/maps/5f1fe5b0-fccf-4d8b-b8b6-c768b888dc6e/style.json
+      MAPBOX_ACCESS_TOKEN: secrets.MAPBOX_ACCESS_TOKEN
+      BACKEND_HTTP_BASEURI: http://aquavitale.ru
+      BACKEND_WS_BASEURI: ws://aquavitale.ru
+
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: setup nodejs
+        uses: actions/setup-node@v3
+        with:
+          node-version: 14
+          cache: "yarn"
+      - name: dependencies
+        run: yarn install --frozen-lockfile
+      - name: build
+        run: yarn build
+      - name: store artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: web-static
+          path: public/*
+      - name: fetcher webhook
+        uses: distributhor/workflow-webhook@v2
+        env:
+          webhook_url: "${{ secrets.FETCHER_URL }}"
+          webhook_secret: "${{ secrets.FETCHER_SECRET }}"
+          webhook_type: json
+          data: '{"run_id": ${{ github.run_id }}}'

@@ -1,0 +1,350 @@
+@import url("https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.1.3/css/bootstrap.min.css");
+@import url("https://cdnjs.cloudflare.com/ajax/libs/bootswatch/4.6.1/sandstone/bootstrap.min.css");
+@import url("https://fonts.googleapis.com/css2?family=Montserrat:wght@300;500;600&family=PT+Mono:wght@300&display=swap");
+@import url("https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.14.0/css/all.min.css");
+
+html,
+body {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+body {
+  color: #333;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: Montserrat, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
+  font-size: 14px;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+input,
+textarea,
+button {
+  font-family: Montserrat, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
+}
+
+.selection-info .title sub {
+  font-size: 0.7em;
+  position: relative;
+  top: -4.5px;
+  font-weight: normal;
+}
+
+.selection-info .title,
+.selection-info .radio,
+.selection-info .route {
+  margin: 0;
+}
+
+.selection-info .title {
+  font-size: 1.3em;
+}
+
+hr {
+  border: none;
+  border-bottom: 1px solid #ddd;
+}
+
+.selection-info .radio {
+  display: flex;
+  justify-content: space-between;
+}
+
+.callsign {
+  /* color: rgb(104, 17, 17); */
+  font-weight: 600;
+}
+
+.freq {
+  color: rgb(17, 104, 17);
+}
+
+.atis-text,
+td.pre {
+  background-color: rgba(255, 255, 255, 0.4);
+  border: 1px solid #ccc;
+  padding: 4px 6px;
+  font-family: "PT Mono", monospace;
+  font-size: 0.85em;
+  line-height: 1.6em;
+  margin: 0.5em 0;
+  border-radius: 4px;
+}
+
+.controller:not(:last-child),
+.pilot:not(:last-child) {
+  padding-bottom: 8px;
+  margin-bottom: 8px;
+  border-bottom: 1px solid #ddd;
+}
+
+.online {
+  text-align: right;
+  margin-top: 4px;
+  font-weight: bold;
+  color: rgb(17, 17, 104);
+  position: relative;
+}
+
+.online::before {
+  content: "Online";
+  font-weight: normal;
+  color: black;
+  right: 70px;
+  position: absolute;
+}
+
+.online.long-session {
+  color: rgb(180, 17, 17);
+}
+
+.pilot .title {
+  position: relative;
+}
+
+.pilot .title.ifr::after,
+.pilot .title.vfr::after {
+  position: absolute;
+  top: 0;
+  right: 0;
+  font-size: 0.6em;
+  padding: 0 3px;
+  color: white;
+}
+
+.pilot .title.ifr::after {
+  content: "IFR";
+  background-color: rgb(180, 17, 17);
+}
+
+.pilot .title.vfr::after {
+  content: "VFR";
+  background-color: rgb(17, 180, 17);
+}
+
+table.pilot-table {
+  margin-top: 1em;
+  width: 100%;
+}
+
+.search-form .filter {
+  padding: 8px;
+  border: 1px solid #ccc;
+  background-color: #f0fff0;
+  border-radius: 4px;
+  font-family: "PT Mono";
+  font-size: 0.85em;
+}
+
+.search-form .filter .reset {
+  text-align: right;
+  margin-top: 4px;
+}
+
+.search-form .filter .reset .btn.btn-sm {
+  font-size: 0.8em;
+}
+
+table.pilot-table tr td:first-child {
+  width: 120px;
+  font-weight: bold;
+}
+
+table.pilot-table tr td:last-child {
+  text-align: right;
+}
+
+td.pre {
+  font-weight: normal !important;
+  text-align: left !important;
+}
+
+.controller {
+  padding: 4px;
+}
+
+.controller.ground {
+  background-color: rgb(230, 244, 230);
+}
+
+.controller.atis {
+  background-color: #f5e2ba;
+}
+
+.controller.tower {
+  background-color: rgb(236, 218, 218);
+}
+
+.controller.approach {
+  background-color: rgb(238, 238, 254);
+}
+
+.controller.delivery {
+  background-color: #334488;
+  color: white;
+}
+
+.controller.delivery .online {
+  color: #eef;
+}
+.controller.delivery .online.long-session {
+  color: #fcc;
+}
+.controller.delivery .online::before {
+  color: white;
+}
+.controller.delivery .radio .callsign {
+  color: #fcc;
+}
+.controller.delivery .radio .freq {
+  color: #cfc;
+}
+
+.controller.radar {
+  background-color: rgb(238, 238, 238);
+}
+
+.copy {
+  position: absolute;
+  z-index: 400;
+  bottom: 1.8em;
+  left: 4px;
+  padding: 4px;
+  font-family: Montserrat;
+  text-transform: uppercase;
+  font-weight: bold;
+  display: flex;
+  text-shadow: 1px 1px 0 white;
+  user-select: none;
+}
+
+.copy img {
+  position: relative;
+  top: -4px;
+  width: 24px;
+  height: 24px;
+  margin-right: 4px;
+}
+
+.brand {
+  position: absolute;
+  top: 8px;
+  left: 12px;
+  font-size: 20px;
+  font-weight: bold;
+  text-transform: uppercase;
+  text-shadow: 2px 2px 0 white;
+  color: #111;
+}
+
+.loading {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  font-size: 2em;
+  color: rgba(0, 0, 0, 0.5);
+}
+
+.control-buttons {
+  position: absolute;
+  left: 12px;
+  top: 12px;
+}
+
+.control-buttons > div {
+  margin-bottom: 4px;
+}
+
+.control-buttons .btn {
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  outline: none !important;
+  box-shadow: none !important;
+  font-size: 1.1em;
+}
+
+.control-buttons .btn.btn-outline-dark.active,
+.control-buttons .btn.btn-outline-dark:hover {
+  background-color: rgba(0, 0, 0, 0.3);
+}
+
+.search-form {
+  margin: 1em 0;
+}
+
+.form-group:not(:last-child) {
+  margin-bottom: 0.5em;
+}
+
+.form-group .form-label {
+  font-size: 0.9em;
+  text-transform: uppercase;
+  margin-bottom: 0;
+}
+
+.form-group .btn {
+  font-size: 0.9em;
+  text-transform: uppercase;
+}
+
+aside.sidebar {
+  top: 0;
+  right: 0;
+  width: 500px;
+  max-width: calc(100vw - 32px);
+  height: 100vh;
+  padding: 40px 20px 20px;
+  box-sizing: border-box;
+  background-color: rgba(255, 255, 255, 0.8);
+  position: absolute;
+}
+
+aside.sidebar .sidebar-close {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  font-size: 3em;
+  line-height: 20px;
+  width: 20px;
+  height: 20px;
+  overflow: hidden;
+  cursor: pointer;
+}
+
+.alert-box {
+  position: absolute;
+  width: 100%;
+  margin: auto;
+  top: 20px;
+  left: 0;
+  padding: 0 8px;
+  z-index: 10;
+}
+
+.alert-box .btn-close {
+  position: absolute;
+  top: 1.1em;
+  right: 1em;
+}
+
+.pilot hr {
+  border-bottom-color: #aaa;
+}
+
+.pilot h4.route {
+  font-weight: 500;
+}
+
+.pilot .title {
+  font-weight: 600;
+}

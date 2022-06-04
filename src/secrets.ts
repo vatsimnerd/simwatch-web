@@ -1,0 +1,13 @@
+const __MAPTILER_KEY__ = process.env.MAPTILER_KEY;
+const __MAPTILER_STYLE__ = process.env.MAPTILER_STYLE;
+const __MAPBOX_ACCESS_TOKEN__ = process.env.MAPBOX_ACCESS_TOKEN;
+const __BACKEND_HTTP_BASEURI__ = process.env.BACKEND_HTTP_BASEURI;
+const __BACKEND_WS_BASEURI__ = process.env.BACKEND_WS_BASEURI;
+
+export {
+  __MAPTILER_KEY__,
+  __MAPTILER_STYLE__,
+  __MAPBOX_ACCESS_TOKEN__,
+  __BACKEND_HTTP_BASEURI__,
+  __BACKEND_WS_BASEURI__,
+};
