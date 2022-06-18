@@ -90,7 +90,7 @@
 
   const clearSelection = () => {
     selected = null;
-    if (!$focusedPilot) {
+    if ($focusedPilot) {
       unloadTrackedPilot();
     }
   };
