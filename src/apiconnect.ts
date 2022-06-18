@@ -71,6 +71,7 @@ class APIConnect {
     this.ws = null;
     this.connected = false;
     this.requestQueue = [];
+    this.includeUncontrolled = false;
 
     this._oncls = this.onClose.bind(this);
     this._onmsg = this.onMessage.bind(this);
