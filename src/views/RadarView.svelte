@@ -71,7 +71,7 @@
   };
 
   const onPlaneClick = (e: CustomEvent<GeoJSON.FeatureCollection>) => {
-    e.detail.features.forEach((feat) => {
+    e.detail.features.forEach(feat => {
       const { callsign } = feat.properties;
       if (callsign) {
         const pilot = $pilots[callsign];
@@ -97,33 +97,33 @@
 
   const onBounds = (e: CustomEvent) => {
     const bounds: MapBounds = {
-      sw: e.detail._sw,
-      ne: e.detail._ne,
+      min: e.detail._sw,
+      max: e.detail._ne,
     };
     setBounds(bounds);
   };
 
   const onAirportClick = (e: CustomEvent<TAirport>) => {
-    Object.values(e.detail.ctrls).forEach((ctrl) => {
+    Object.values(e.detail.ctrls).forEach(ctrl => {
       if (ctrl) selectItem(ctrl);
     });
   };
 
   const onRadarClick = (e: CustomEvent<GeoJSON.FeatureCollection>) => {
-    e.detail.features.forEach((feat) => {
+    e.detail.features.forEach(feat => {
       const callsigns = JSON.parse(feat.properties.callsigns);
-      callsigns.forEach((callsign) => {
+      callsigns.forEach(callsign => {
         selectItem($radars[callsign].ctrl);
       });
     });
   };
 
   const onApproachClick = (e: CustomEvent<GeoJSON.FeatureCollection>) => {
-    e.detail.features.forEach((feat) => {
+    e.detail.features.forEach(feat => {
       const icao = feat.properties.airport_icao;
-      const airport = $airports.find((arpt) => arpt.meta.icao === icao);
+      const airport = $airports.find(arpt => arpt.icao === icao);
       if (airport) {
-        selectItem(airport.ctrls.appr);
+        selectItem(airport.ctrls.approach);
       }
     });
   };
@@ -132,7 +132,7 @@
     showSearch = false;
     if (selectionTimeout) {
       const alreadySelected = selected.some(
-        (item) => item.callsign === item.callsign
+        item => item.callsign === item.callsign
       );
 
       if (!alreadySelected) {
@@ -187,7 +187,7 @@
     }}
   >
     {#if showControllers}
-      {#each $airports as airport (airport.meta.icao)}
+      {#each $airports as airport (airport.icao)}
         <Airport on:click={onAirportClick} {airport} />
       {/each}
     {/if}

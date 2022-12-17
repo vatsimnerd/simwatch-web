@@ -1,4 +1,5 @@
 import svelte from "rollup-plugin-svelte";
+import dev from "rollup-plugin-dev";
 import commonjs from "@rollup/plugin-commonjs";
 import resolve from "@rollup/plugin-node-resolve";
 import livereload from "rollup-plugin-livereload";
@@ -56,9 +57,6 @@ export default {
       "process.env.BACKEND_HTTP_BASEURI": JSON.stringify(
         process.env.BACKEND_HTTP_BASEURI
       ),
-      "process.env.BACKEND_WS_BASEURI": JSON.stringify(
-        process.env.BACKEND_WS_BASEURI
-      ),
     }),
     svelte({
       preprocess: sveltePreprocess({ sourceMap: !production }),
@@ -88,7 +86,13 @@ export default {
 
     // In dev mode, call `npm run start` once
     // the bundle has been generated
-    !production && serve(),
+    !production &&
+      dev({
+        dirs: ["public"],
+        spa: "public/index.html",
+        port: 8080,
+        proxy: [{ from: "/api", to: "http://127.0.0.1:8000/api" }],
+      }),
 
     // Watch the `public` directory and refresh the
     // browser on changes when not in production
