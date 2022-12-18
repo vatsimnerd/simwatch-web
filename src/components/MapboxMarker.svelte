@@ -1,19 +1,19 @@
-<script>
-  import mapboxgl from "mapbox-gl";
+<script lang="ts">
+  import mapboxgl, { Marker } from "mapbox-gl";
   import { getContext, onDestroy, onMount } from "svelte";
-  import { ctxMap } from "../context";
+  import { CtxMap, ctxMap } from "../context";
 
-  export let lat;
-  export let lng;
+  export let lat: number;
+  export let lng: number;
   export let rot = 0;
-  export let markerClass = null;
+  export let markerClass: string | null = null;
 
-  const map = getContext(ctxMap).getMap();
-  let container;
-  let marker;
-  let parent;
-  let popup;
-  let popupContent = null;
+  const map = getContext<CtxMap>(ctxMap).getMap();
+  let container: HTMLElement;
+  let marker: Marker;
+  let parent: Element | null;
+  let popup: Element;
+  let popupContent: Element | null = null;
   let mapboxPopup = null;
 
   $: if (popup) {
@@ -38,21 +38,21 @@
   }
 
   $: if (marker && markerClass) {
-    const element = marker.getElement();
+    const element = marker.getElement() as HTMLElement;
     const currentClasses = Array.from(element.classList).filter(
-      (className) => !className.startsWith("mapboxgl-")
+      className => !className.startsWith("mapboxgl-")
     );
     const newClasses = markerClass.split(/\s+/);
-    const add = newClasses.filter((nc) => !currentClasses.includes(nc));
-    const remove = currentClasses.filter((cc) => !newClasses.includes(cc));
-    remove.forEach((className) => element.classList.remove(className));
-    add.forEach((className) => element.classList.add(className));
+    const add = newClasses.filter(nc => !currentClasses.includes(nc));
+    const remove = currentClasses.filter(cc => !newClasses.includes(cc));
+    remove.forEach(className => element.classList.remove(className));
+    add.forEach(className => element.classList.add(className));
   }
 
   onMount(() => {
     // This is a hack to resolve conflicts between svelte and mapbox
     // messing around with the same element (See onDestroy)
-    parent = container.parentNode;
+    parent = container.parentElement;
     marker = new mapboxgl.Marker(container)
       .setLngLat([lng, lat])
       .setRotation(rot)
@@ -77,7 +77,7 @@
   <slot />
   <div bind:this={popup} class="invisible">
     <slot name="popup">
-      <div touchdown-nopopup />
+      <div />
     </slot>
   </div>
 </div>
