@@ -152,7 +152,8 @@ export type APIConnectEvent =
   | "set-firs"
   | "del-pilots"
   | "del-airports"
-  | "del-firs";
+  | "del-firs"
+  | "error";
 export type APIConnectState = {
   pilots: Record<string, Pilot>;
   airports: Record<string, Airport>;

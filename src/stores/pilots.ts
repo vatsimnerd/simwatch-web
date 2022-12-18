@@ -123,7 +123,11 @@ export const pilotsGeoJSON = derived<
 });
 
 export const setupFilter = (query: string) => {
-  api.setFilter(query);
+  if (query === "") {
+    api.resetFilter();
+  } else {
+    api.setFilter(query);
+  }
   _planeFilter.set(query);
 };
 

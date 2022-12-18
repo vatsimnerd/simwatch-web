@@ -30,6 +30,7 @@ class APIConnect {
     this.handlers = {
       close: [],
       connect: [],
+      error: [],
       "set-pilots": [],
       "del-pilots": [],
       "set-airports": [],
@@ -67,10 +68,14 @@ class APIConnect {
     this._reconnect();
   }
 
-  setFilter(query: string) {
+  async setFilter(query: string) {
     if (query === this.pFilter) return;
-    this.pFilter = query;
-    this._reconnect();
+
+    const checkResult = await this.checkQuery(query);
+    if (checkResult) {
+      this.pFilter = query;
+      this._reconnect();
+    }
   }
 
   resetFilter() {
@@ -97,6 +102,18 @@ class APIConnect {
     );
   }
 
+  private async checkQuery(query: string): Promise<boolean> {
+    query = encodeURIComponent(query);
+    return await Axios.get(`/api/chkquery?query=${query}`)
+      .then(() => true)
+      .catch(err => {
+        const message =
+          err.response?.data?.error || "unidentified error in query";
+        this.emit("error", message);
+        return false;
+      });
+  }
+
   private emit(evName: APIConnectEvent, ...args: any[]) {
     this.handlers[evName].forEach(handler => {
       handler.apply(null, args);
@@ -108,7 +125,7 @@ class APIConnect {
   }
 
   private onError(e: Error) {
-    console.log("error", e);
+    this.emit("error", e);
     // in either case let's try to reconnect
     setTimeout(() => {
       this._reconnect();
@@ -197,22 +214,27 @@ class APIConnect {
       this.es.close();
       this.es.removeEventListener("open", this._onopen);
       this.es.removeEventListener("message", this._onmsg);
+      this.es.removeEventListener("error", this._onerr);
       this.es = null;
     }
 
     this.reconnecting = true;
+    const url = this.genURL();
+    this.es = new EventSource(url);
+    this.es.addEventListener("open", this._onopen);
+    this.es.addEventListener("message", this._onmsg);
+    this.es.addEventListener("error", this._onerr);
+  }
+
+  private genURL() {
     const { min, max } = this.bounds;
     const path = `/api/updates/${min.lng}/${min.lat}/${max.lng}/${max.lat}`;
     const usp = new URLSearchParams();
     if (this.pFilter) {
       usp.set("query", this.pFilter);
     }
-
     const qs = Array.from(usp).length > 0 ? `?${usp.toString()}` : "";
-    const url = `${path}${qs}`;
-    this.es = new EventSource(url);
-    this.es.addEventListener("open", this._onopen);
-    this.es.addEventListener("message", this._onmsg);
+    return `${path}${qs}`;
   }
 }
 
