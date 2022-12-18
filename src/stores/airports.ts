@@ -13,7 +13,7 @@ export const airports = readable<Airport[]>(
       airports = {
         ...airports,
         ...objects.reduce<{ [key: string]: Airport }>((acc, item) => {
-          acc[item.meta.icao] = item;
+          acc[item.icao] = item;
           return acc;
         }, {}),
       };
@@ -21,23 +21,17 @@ export const airports = readable<Airport[]>(
     };
 
     const remove = (objects: Airport[]) => {
-      objects.forEach((arpt) => {
-        delete airports[arpt.meta.icao];
+      objects.forEach(arpt => {
+        delete airports[arpt.icao];
       });
       set(Object.values(airports));
     };
 
-    const reset = () => {
-      set([]);
-    };
-
-    api.on("set-airport", add);
-    api.on("del-airport", remove);
-    api.on("reset", reset);
+    api.on("set-airports", add);
+    api.on("del-airports", remove);
     return () => {
-      api.off("set-airport", add);
-      api.off("del-airport", remove);
-      api.off("reset", reset);
+      api.off("set-airports", add);
+      api.off("del-airports", remove);
     };
   }
 );
@@ -45,17 +39,17 @@ export const airports = readable<Airport[]>(
 export const approachesGeoJSON = derived<
   Readable<Airport[]>,
   GeoJSON.FeatureCollection
->(airports, ($airports) => {
+>(airports, $airports => {
   const data: GeoJSON.FeatureCollection = {
     type: "FeatureCollection",
     features: [],
   };
   $airports.forEach((airport: Airport) => {
-    const approach = airport.ctrls.appr;
+    const approach = airport.controllers.approach;
     if (approach) {
       const range = approach.visual_range ? approach.visual_range / 2 : 50;
       const feature = circle(
-        [airport.meta.position.lng, airport.meta.position.lat],
+        [airport.position.lng, airport.position.lat],
         range,
         {
           units: "kilometers",
@@ -63,7 +57,7 @@ export const approachesGeoJSON = derived<
       );
       feature.id = approach.callsign;
       feature.properties = {
-        airport_icao: airport.meta.icao,
+        airport_icao: airport.icao,
       };
       data.features.push(feature);
     }
@@ -74,24 +68,24 @@ export const approachesGeoJSON = derived<
 export const arrivalGeoJSON = derived<
   Readable<Airport[]>,
   GeoJSON.FeatureCollection
->(airports, ($airports) => {
+>(airports, $airports => {
   const data: GeoJSON.FeatureCollection = {
     type: "FeatureCollection",
     features: [],
   };
   $airports.forEach((airport: Airport) => {
-    const { rwys } = airport;
-    for (const ident in rwys) {
-      const runway = rwys[ident];
+    const { runways } = airport;
+    for (const ident in runways) {
+      const runway = runways[ident];
       if (runway.active_lnd) {
         const feature: GeoJSON.Feature = ilsPoly(
-          [runway.lng, runway.lat],
-          runway.hdg
+          [runway.longitude, runway.latitude],
+          runway.heading
         );
         feature.properties = {
           icao: runway.icao,
           ident,
-          heading: (runway.hdg - 90) % 360,
+          heading: (runway.heading - 90) % 360,
         };
         data.features.push(feature);
       }
@@ -103,19 +97,19 @@ export const arrivalGeoJSON = derived<
 export const departureGeoJSON = derived<
   Readable<Airport[]>,
   GeoJSON.FeatureCollection
->(airports, ($airports) => {
+>(airports, $airports => {
   const data: GeoJSON.FeatureCollection = {
     type: "FeatureCollection",
     features: [],
   };
   $airports.forEach((airport: Airport) => {
-    const { rwys } = airport;
-    for (const ident in rwys) {
-      const runway = rwys[ident];
+    const { runways } = airport;
+    for (const ident in runways) {
+      const runway = runways[ident];
       if (runway.active_to) {
         const features: GeoJSON.Feature[] = departureArrows(
-          [runway.lng, runway.lat],
-          runway.hdg,
+          [runway.longitude, runway.latitude],
+          runway.heading,
           runway.length_ft
         );
         data.features.push(...features);

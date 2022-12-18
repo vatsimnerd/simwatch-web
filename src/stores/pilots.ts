@@ -15,25 +15,21 @@ const trackedPilot = writable<Pilot | null>(null);
 const _planeFilter = writable<string | null>(null);
 
 export const subscribeID = async (id: string) => {
-  return api.subscribeID(id).catch((err: Error) => {
-    messages.alert(err.message);
-  });
+  return api.subscribeID(id);
 };
 
 export const unsubscribeID = async (id: string) => {
-  return api.unsubscribeID(id).catch((err: Error) => {
-    messages.alert(err.message);
-  });
+  return api.unsubscribeID(id);
 };
 
 export const loadTrackedPilot = async (callsign: string) => {
   return api
     .getPilot(callsign)
-    .then((pilot) => {
+    .then(pilot => {
       trackedPilot.set(pilot);
       tracked = pilot.callsign;
     })
-    .catch((err) => {
+    .catch(err => {
       messages.error(err);
     });
 };
@@ -45,7 +41,7 @@ export const unloadTrackedPilot = async () => {
 
 export const focusedPilot = derived(
   trackedPilot,
-  ($trackedPilot) => $trackedPilot
+  $trackedPilot => $trackedPilot
 );
 
 export const pilots = readable<{ [key: string]: Pilot }>(
@@ -57,7 +53,7 @@ export const pilots = readable<{ [key: string]: Pilot }>(
       pilots = {
         ...pilots,
         ...objects.reduce<{ [key: string]: Pilot }>((acc, item) => {
-          // I know, side-effect in reduce is meh..
+          // I know, side-effects in `reduce` is meh..
           if (item.callsign === tracked) {
             loadTrackedPilot(tracked);
           }
@@ -70,23 +66,17 @@ export const pilots = readable<{ [key: string]: Pilot }>(
     };
 
     const remove = (objects: Pilot[]) => {
-      objects.forEach((pilot) => {
+      objects.forEach(pilot => {
         delete pilots[pilot.callsign];
       });
       set(pilots);
     };
 
-    const reset = () => {
-      set({});
-    };
-
-    api.on("set-pilot", add);
-    api.on("del-pilot", remove);
-    api.on("reset", reset);
+    api.on("set-pilots", add);
+    api.on("del-pilots", remove);
     return () => {
-      api.off("set-pilot", add);
-      api.off("del-pilot", remove);
-      api.off("reset", reset);
+      api.off("set-pilots", add);
+      api.off("del-pilots", remove);
     };
   }
 );
@@ -94,7 +84,7 @@ export const pilots = readable<{ [key: string]: Pilot }>(
 export const pilotsGeoJSON = derived<
   Readable<{ [key: string]: Pilot }>,
   GeoJSON.FeatureCollection
->(pilots, ($pilots) => {
+>(pilots, $pilots => {
   const data: GeoJSON.FeatureCollection = {
     type: "FeatureCollection",
     features: [],
@@ -112,6 +102,7 @@ export const pilotsGeoJSON = derived<
       size = 0.014;
       rotation += 45;
     }
+
     const feature: GeoJSON.Feature = {
       type: "Feature",
       properties: {
@@ -122,28 +113,30 @@ export const pilotsGeoJSON = derived<
       },
       geometry: {
         type: "Point",
-        coordinates: [pilot.longitude, pilot.latitude],
+        coordinates: [pilot.position.lng, pilot.position.lat],
       },
     };
+
     data.features.push(feature);
   }
   return data;
 });
 
 export const setupFilter = async (query: string) => {
-  return api
-    .setPlaneFilter(query)
-    .then(() => {
+  if (query === "") {
+    api.resetFilter();
+    _planeFilter.set(query);
+  } else {
+    const res = await api.setFilter(query);
+    if (res) {
       _planeFilter.set(query);
-    })
-    .catch((err) => {
-      messages.alert(err);
-    });
+    }
+  }
 };
 
 export const planeFilter = derived<Writable<string>, string>(
   _planeFilter,
-  ($_planeFilter) => {
+  $_planeFilter => {
     return $_planeFilter;
   }
 );

@@ -1,9 +1,10 @@
-<script>
+<script lang="ts">
   import Popup from "./Popup.svelte";
-  import { ctxMap } from "../context";
+  import { CtxMap, ctxMap } from "../context";
   import { getContext } from "svelte";
+  import type { Pilot } from "../types";
 
-  export let aircraft;
+  export let aircraft: Pilot;
 
   let callsign = aircraft.callsign;
   let acType = aircraft.flight_plan?.aircraft || null;
@@ -11,9 +12,9 @@
   let arrival = aircraft.flight_plan?.arrival;
   let name = aircraft.name;
 
-  const map = getContext(ctxMap).getMap();
+  const map = getContext<CtxMap>(ctxMap).getMap();
 
-  const coords = map.project([aircraft.longitude, aircraft.latitude]);
+  const coords = map.project([aircraft.position.lng, aircraft.position.lat]);
   let left = coords.x;
   let top = coords.y - 25;
 </script>

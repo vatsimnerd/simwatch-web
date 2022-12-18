@@ -1,23 +1,22 @@
-import { v4 as uuid } from "uuid";
-
 export type Point = {
   lat: number;
   lng: number;
 };
 
-export type Airport = {
-  meta: AirportMeta;
-  ctrls: ControllerSet;
-  rwys: { [key: string]: Runway };
+export type MapBounds = {
+  min: Point;
+  max: Point;
 };
 
-export type AirportMeta = {
+export type Airport = {
   icao: string;
   iata: string;
   name: string;
+  position: Point;
   fir_id: string;
   is_pseudo: boolean;
-  position: Point;
+  controllers: ControllerSet;
+  runways: { [key: string]: Runway };
 };
 
 export type Controller = {
@@ -25,8 +24,8 @@ export type Controller = {
   name: string;
   human_readable: string;
   callsign: string;
-  frequency: number;
-  facility: number;
+  freq: number;
+  facility: string;
   rating: number;
   server: string;
   visual_range: number;
@@ -38,10 +37,10 @@ export type Controller = {
 
 export type ControllerSet = {
   atis: Controller | null;
-  del: Controller | null;
-  gnd: Controller | null;
-  twr: Controller | null;
-  appr: Controller | null;
+  delivery: Controller | null;
+  ground: Controller | null;
+  tower: Controller | null;
+  approach: Controller | null;
 };
 
 export type AircraftType = {
@@ -61,14 +60,13 @@ export type Pilot = {
   callsign: string;
   server: string;
   pilot_rating: number;
-  latitude: number;
-  longitude: number;
+  position: Point;
   altitude: number;
   groundspeed: number;
+  transponder: string;
   heading: number;
   qnh_i_hg: number;
   qnh_mb: number;
-  transponder: string;
   logon_time: Date;
   last_updated: Date;
   flight_plan: FlightPlan | null;
@@ -83,7 +81,7 @@ export type FlightPlan = {
   arrival: string;
   alternate: string;
   cruise_tas: string;
-  altitude: string;
+  altitude: number;
   deptime: string;
   enroute_time: string;
   fuel_time: string;
@@ -97,11 +95,11 @@ export type Radar = {
 };
 
 export type FIR = {
-  id: string;
+  icao: string;
   name: string;
   prefix: string;
-  parent_id: string;
   boundaries: Boundaries;
+  controllers: Record<string, Controller>;
 };
 
 export type Boundaries = {
@@ -113,56 +111,6 @@ export type Boundaries = {
   max: Point;
   center: Point;
   points: Point[][];
-};
-
-export type VatsimObject = Pilot | Radar | Airport;
-
-export type SimRequestType = "bounds" | "pilot_filter" | "airport_filter";
-
-export class SimRequest {
-  id: string;
-  constructor(private type: SimRequestType, private payload: any) {
-    this.id = uuid();
-  }
-}
-
-export type MapBounds = {
-  sw: Point;
-  ne: Point;
-};
-
-export enum SimEventType {
-  SET = "set",
-  DELETE = "del",
-}
-
-export enum SimEventObjectType {
-  AIRPORT = "arpt",
-  RADAR = "rdr",
-  PILOT = "plt",
-}
-
-export type SimResponse = {
-  id: string;
-  type: "update" | "error" | "status";
-  payload: SimEvent | SimError | SimStatus;
-};
-
-export type SimEvent = {
-  e_type: SimEventType;
-  o_type: SimEventObjectType;
-  objects: Pilot[] | Airport[] | Radar[];
-};
-
-export type SimError = {
-  req_id: string;
-  error: string;
-};
-
-export type SimStatus = {
-  req_id: string;
-  status: string;
-  data?: any;
 };
 
 export type TrackPoint = {
@@ -182,10 +130,10 @@ export type Runway = {
   surface: string;
   lighted: boolean;
   closed: boolean;
-  lat: number;
-  lng: number;
-  elev_ft: number;
-  hdg: number;
+  latitude: number;
+  longitude: number;
+  elevation_ft: number;
+  heading: number;
   active_to: boolean;
   active_lnd: boolean;
 };
@@ -194,3 +142,37 @@ export enum RadarToggleType {
   PILOTS,
   ATC,
 }
+
+export type APIConnectHandler = (args: any) => void;
+export type APIConnectEvent =
+  | "connect"
+  | "close"
+  | "set-pilots"
+  | "set-airports"
+  | "set-firs"
+  | "del-pilots"
+  | "del-airports"
+  | "del-firs"
+  | "error";
+export type APIConnectState = {
+  pilots: Record<string, Pilot>;
+  airports: Record<string, Airport>;
+  firs: Record<string, FIR>;
+};
+
+export type APIConnectServerUpdate = {
+  connection_id: string;
+  message_type: string;
+  data: {
+    set: {
+      pilots: Pilot[];
+      airports: Airport[];
+      firs: FIR[];
+    };
+    delete: {
+      pilots: Pilot[];
+      airports: Airport[];
+      firs: FIR[];
+    };
+  };
+};

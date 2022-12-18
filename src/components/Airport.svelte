@@ -10,19 +10,19 @@
   };
 </script>
 
-<MapboxMarker lat={airport.meta.position.lat} lng={airport.meta.position.lng}>
+<MapboxMarker lat={airport.position.lat} lng={airport.position.lng}>
   <div on:click={onClick} class="arpt-mrk">
-    <div class="arpt-mrk-name">{airport.meta.icao}</div>
-    {#if airport.ctrls.del}
+    <div class="arpt-mrk-name">{airport.icao}</div>
+    {#if airport.controllers.delivery}
       <div class="arpt-mrk-facility arpt-mrk-del" />
     {/if}
-    {#if airport.ctrls.gnd}
+    {#if airport.controllers.ground}
       <div class="arpt-mrk-facility arpt-mrk-gnd" />
     {/if}
-    {#if airport.ctrls.twr}
+    {#if airport.controllers.tower}
       <div class="arpt-mrk-facility arpt-mrk-twr" />
     {/if}
-    {#if airport.ctrls.atis}
+    {#if airport.controllers.atis}
       <div class="arpt-mrk-facility arpt-mrk-atis" />
     {/if}
   </div>

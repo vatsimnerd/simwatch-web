@@ -22,8 +22,8 @@
     approachStrokePaint,
     planeClusterCount,
     planeClusterPaint,
-    radarsFillPaint,
-    radarsStrokePaint,
+    firsFillPaint,
+    firsStrokePaint,
     arrivalsFillPaint,
     runwaysFilter,
     arrivalsStrokePaint,
@@ -46,7 +46,7 @@
     arrivalGeoJSON,
     departureGeoJSON,
   } from "../stores/airports";
-  import { radars, radarsGeoJSON, setBounds } from "../stores/radars";
+  import { radars, firsGeoJSON, setBounds } from "../stores/radars";
 
   // proved to be the center of Europe
   let lat = 51.1657;
@@ -71,7 +71,7 @@
   };
 
   const onPlaneClick = (e: CustomEvent<GeoJSON.FeatureCollection>) => {
-    e.detail.features.forEach((feat) => {
+    e.detail.features.forEach(feat => {
       const { callsign } = feat.properties;
       if (callsign) {
         const pilot = $pilots[callsign];
@@ -97,49 +97,56 @@
 
   const onBounds = (e: CustomEvent) => {
     const bounds: MapBounds = {
-      sw: e.detail._sw,
-      ne: e.detail._ne,
+      min: {
+        lat: e.detail._sw.lat,
+        lng: e.detail._sw.lng,
+      },
+      max: {
+        lat: e.detail._ne.lat,
+        lng: e.detail._ne.lng,
+      },
     };
+    window["bounds"] = bounds;
     setBounds(bounds);
   };
 
   const onAirportClick = (e: CustomEvent<TAirport>) => {
-    Object.values(e.detail.ctrls).forEach((ctrl) => {
+    Object.values(e.detail.controllers).forEach(ctrl => {
       if (ctrl) selectItem(ctrl);
     });
   };
 
-  const onRadarClick = (e: CustomEvent<GeoJSON.FeatureCollection>) => {
-    e.detail.features.forEach((feat) => {
+  const onFirClick = (e: CustomEvent<GeoJSON.FeatureCollection>) => {
+    e.detail.features.forEach(feat => {
       const callsigns = JSON.parse(feat.properties.callsigns);
-      callsigns.forEach((callsign) => {
-        selectItem($radars[callsign].ctrl);
+      callsigns.forEach(callsign => {
+        selectItem($radars[callsign]);
       });
     });
   };
 
   const onApproachClick = (e: CustomEvent<GeoJSON.FeatureCollection>) => {
-    e.detail.features.forEach((feat) => {
+    e.detail.features.forEach(feat => {
       const icao = feat.properties.airport_icao;
-      const airport = $airports.find((arpt) => arpt.meta.icao === icao);
+      const airport = $airports.find(arpt => arpt.icao === icao);
       if (airport) {
-        selectItem(airport.ctrls.appr);
+        selectItem(airport.controllers.approach);
       }
     });
   };
 
-  const selectItem = (item: Controller | Pilot) => {
+  const selectItem = (object: Controller | Pilot) => {
     showSearch = false;
     if (selectionTimeout) {
       const alreadySelected = selected.some(
-        (item) => item.callsign === item.callsign
+        item => object.callsign === item.callsign
       );
 
       if (!alreadySelected) {
-        selected = [...selected, item];
+        selected = [...selected, object];
       }
     } else {
-      selected = [item];
+      selected = [object];
       selectionTimeout = window.setTimeout(() => {
         selectionTimeout = null;
       }, 50);
@@ -187,7 +194,7 @@
     }}
   >
     {#if showControllers}
-      {#each $airports as airport (airport.meta.icao)}
+      {#each $airports as airport (airport.icao)}
         <Airport on:click={onAirportClick} {airport} />
       {/each}
     {/if}
@@ -231,15 +238,15 @@
         />
       {/if}
     </MapboxGeojsonSource>
-    <MapboxGeojsonSource id="radars" data={$radarsGeoJSON}>
+    <MapboxGeojsonSource id="radars" data={$firsGeoJSON}>
       {#if showControllers}
         <MapboxLayer
           id="radars"
           type="fill"
-          paint={radarsFillPaint}
-          on:click={onRadarClick}
+          paint={firsFillPaint}
+          on:click={onFirClick}
         />
-        <MapboxLayer id="radars-stroke" type="line" paint={radarsStrokePaint} />
+        <MapboxLayer id="radars-stroke" type="line" paint={firsStrokePaint} />
       {/if}
     </MapboxGeojsonSource>
     <MapboxGeojsonSource id="approaches" data={$approachesGeoJSON}>

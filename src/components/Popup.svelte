@@ -1,6 +1,6 @@
-<script>
-  export let left;
-  export let top;
+<script lang="ts">
+  export let left: number;
+  export let top: number;
   export let width = 100;
   export let height = 50;
 

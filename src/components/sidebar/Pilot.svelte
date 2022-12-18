@@ -1,11 +1,13 @@
-<script>
-  export let pilot;
+<script lang="ts">
+  import type { FlightPlan, Pilot } from "../../types";
+
+  export let pilot: Pilot;
 
   let name = "";
-  let ifr;
-  let vfr;
+  let ifr: boolean;
+  let vfr: boolean;
   let route = "";
-  let fp;
+  let fp: FlightPlan | null;
 
   $: {
     const tokens = pilot.name.split(/\s+/);
@@ -41,12 +43,12 @@
     <tr><td>Heading</td><td>{pilot.heading}</td></tr>
     <tr><td>Groundspeed</td><td>{pilot.groundspeed}</td></tr>
     <tr><td colspan="2"><hr /></td></tr>
-    <tr><td>Lat</td><td>{pilot.latitude}</td></tr>
-    <tr><td>Lng</td><td>{pilot.longitude}</td></tr>
+    <tr><td>Lat</td><td>{pilot.position.lat}</td></tr>
+    <tr><td>Lng</td><td>{pilot.position.lng}</td></tr>
     <tr><td>QNH</td><td>{pilot.qnh_mb}</td></tr>
     <tr><td>Transponder</td><td>{pilot.transponder}</td></tr>
     {#if fp}
-      <tr><th colspan="2">FLIGHTPLAN</th></tr>
+      <tr class="flightplan"><th colspan="2">FLIGHTPLAN</th></tr>
       <tr><td>Aircraft Type</td><td>{fp.aircraft}</td></tr>
       <tr><td>Altitude</td><td>{fp.altitude}</td></tr>
       <tr><td>Cruise TAS</td><td>{fp.cruise_tas}</td></tr>
@@ -70,4 +72,9 @@
 </div>
 
 <style>
+  tr.flightplan th {
+    padding: 20px 0 4px;
+    /* border-top: 1px solid #ccc; */
+    border-bottom: 1px solid #ccc;
+  }
 </style>
