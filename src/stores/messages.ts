@@ -46,13 +46,14 @@ const createMessagesStore = () => {
 
   const removeMessage = (id: number) => {
     update((messages: Message[]) => {
-      return messages.filter((msg) => msg.id !== id);
+      return messages.filter(msg => msg.id !== id);
     });
   };
 
   return {
     subscribe,
     addMessage,
+    removeMessage,
     alert(text: string, timeout?: number) {
       addMessage(text, "danger", timeout);
     },
@@ -73,6 +74,6 @@ const createMessagesStore = () => {
 
 export const messages = createMessagesStore();
 
-api.on("error", (error) => {
+api.on("error", error => {
   messages.error(error);
 });

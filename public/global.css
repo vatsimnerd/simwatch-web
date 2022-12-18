@@ -332,10 +332,17 @@ aside.sidebar .sidebar-close {
   z-index: 10;
 }
 
-.alert-box .btn-close {
+.alert-box .alert .close {
   position: absolute;
-  top: 1.1em;
-  right: 1em;
+  top: 0.1em;
+  right: 0.4em;
+  color: white;
+}
+
+.alert-box .alert .close::after {
+  content: "×";
+  font-weight: normal;
+  font-size: 1.4em;
 }
 
 .pilot hr {

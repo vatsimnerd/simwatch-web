@@ -68,14 +68,15 @@ class APIConnect {
     this._reconnect();
   }
 
-  async setFilter(query: string) {
-    if (query === this.pFilter) return;
+  async setFilter(query: string): Promise<boolean> {
+    if (query === this.pFilter) return false;
 
     const checkResult = await this.checkQuery(query);
     if (checkResult) {
       this.pFilter = query;
       this._reconnect();
     }
+    return checkResult;
   }
 
   resetFilter() {
@@ -124,8 +125,9 @@ class APIConnect {
     this.emit("connect");
   }
 
-  private onError(e: Error) {
-    this.emit("error", e);
+  private onError(e: ErrorEvent) {
+    const message = e.error || e.message || "EventSource unidentified error";
+    this.emit("error", message);
     // in either case let's try to reconnect
     setTimeout(() => {
       this._reconnect();
