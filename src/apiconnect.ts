@@ -7,6 +7,7 @@ import type {
   Pilot,
 } from "./types";
 import Axios from "axios";
+import { mbEq } from "./misc";
 
 class APIConnect {
   private handlers: Record<APIConnectEvent, APIConnectHandler[]>;
@@ -17,12 +18,12 @@ class APIConnect {
   private state: APIConnectState;
   private reconnecting = false;
 
-  private _oncls: () => void;
+  private _onerr: () => void;
   private _onmsg: () => void;
   private _onopen: () => void;
 
   constructor() {
-    this._oncls = this.onClose.bind(this);
+    this._onerr = this.onError.bind(this);
     this._onmsg = this.onMessage.bind(this);
     this._onopen = this.onOpen.bind(this);
 
@@ -61,16 +62,19 @@ class APIConnect {
   }
 
   setBounds(bounds: MapBounds) {
+    if (this.bounds && mbEq(bounds, this.bounds)) return;
     this.bounds = bounds;
     this._reconnect();
   }
 
   setFilter(query: string) {
+    if (query === this.pFilter) return;
     this.pFilter = query;
     this._reconnect();
   }
 
   resetFilter() {
+    if (!this.pFilter) return;
     this.pFilter = null;
     this._reconnect();
   }
@@ -101,8 +105,8 @@ class APIConnect {
     this.emit("connect");
   }
 
-  private onClose() {
-    this.emit("close");
+  private onError(e: Error) {
+    console.log("error", e);
     // in either case let's try to reconnect
     setTimeout(() => {
       this._reconnect();
@@ -131,7 +135,7 @@ class APIConnect {
       const airport_ids = new Set(
         update.data.set.airports.map(arpt => `${arpt.icao}:${arpt.iata}`)
       );
-      const fir_ids = new Set(update.data.set.firs.map(fir => fir.id));
+      const fir_ids = new Set(update.data.set.firs.map(fir => fir.icao));
 
       Object.entries(this.state.pilots).forEach(([callsign, pilot]) => {
         if (!pilot_ids.has(callsign)) {
@@ -165,10 +169,10 @@ class APIConnect {
     });
 
     update.data.set.firs.forEach(fir => {
-      this.state.firs[fir.id] = fir;
+      this.state.firs[fir.icao] = fir;
     });
     update.data.delete.firs.forEach(fir => {
-      delete this.state.firs[fir.id];
+      delete this.state.firs[fir.icao];
     });
 
     if (update.data.set.pilots.length > 0)
@@ -189,6 +193,8 @@ class APIConnect {
     if (!this.bounds) return;
     if (this.es) {
       this.es.close();
+      this.es.removeEventListener("open", this._onopen);
+      this.es.removeEventListener("message", this._onmsg);
       this.es = null;
     }
 

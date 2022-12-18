@@ -1,3 +1,5 @@
+import type { MapBounds } from "./types";
+
 export type Handler = (...args: any[]) => void;
 export type HandlerFilter = (...args: any[]) => boolean;
 export type HandlerFinaliser = () => void;
@@ -30,7 +32,7 @@ export const DebouncedHandler = (
 
     if (tm < 0) {
       tm = window.setTimeout(() => {
-        argsQueue.forEach((args) => {
+        argsQueue.forEach(args => {
           handler.apply(null, args);
         });
         argsQueue = [];
@@ -63,3 +65,12 @@ export const formatDuration = (secs: number) => {
 
   return `${hrsStr}:${minsStr}`;
 };
+
+export function mbEq(one: MapBounds, another: MapBounds): boolean {
+  return (
+    one.min.lat === another.min.lat &&
+    one.min.lng === another.min.lng &&
+    one.max.lat === another.max.lat &&
+    one.max.lng === another.max.lng
+  );
+}

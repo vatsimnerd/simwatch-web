@@ -12,11 +12,11 @@ export type Airport = {
   icao: string;
   iata: string;
   name: string;
+  position: Point;
   fir_id: string;
   is_pseudo: boolean;
-  position: Point;
-  ctrls: ControllerSet;
-  rwys: { [key: string]: Runway };
+  controllers: ControllerSet;
+  runways: { [key: string]: Runway };
 };
 
 export type Controller = {
@@ -63,10 +63,10 @@ export type Pilot = {
   position: Point;
   altitude: number;
   groundspeed: number;
+  transponder: string;
   heading: number;
   qnh_i_hg: number;
   qnh_mb: number;
-  transponder: string;
   logon_time: Date;
   last_updated: Date;
   flight_plan: FlightPlan | null;
@@ -81,7 +81,7 @@ export type FlightPlan = {
   arrival: string;
   alternate: string;
   cruise_tas: string;
-  altitude: string;
+  altitude: number;
   deptime: string;
   enroute_time: string;
   fuel_time: string;
@@ -95,10 +95,9 @@ export type Radar = {
 };
 
 export type FIR = {
-  id: string;
+  icao: string;
   name: string;
   prefix: string;
-  parent_id: string;
   boundaries: Boundaries;
 };
 
@@ -112,8 +111,6 @@ export type Boundaries = {
   center: Point;
   points: Point[][];
 };
-
-export type VatsimObject = Pilot | Radar | Airport;
 
 export type TrackPoint = {
   lat: number;
@@ -132,10 +129,10 @@ export type Runway = {
   surface: string;
   lighted: boolean;
   closed: boolean;
-  lat: number;
-  lng: number;
-  elev_ft: number;
-  hdg: number;
+  latitude: number;
+  longitude: number;
+  elevation_ft: number;
+  heading: number;
   active_to: boolean;
   active_lnd: boolean;
 };

@@ -97,14 +97,21 @@
 
   const onBounds = (e: CustomEvent) => {
     const bounds: MapBounds = {
-      min: e.detail._sw,
-      max: e.detail._ne,
+      min: {
+        lat: e.detail._sw.lat,
+        lng: e.detail._sw.lng,
+      },
+      max: {
+        lat: e.detail._ne.lat,
+        lng: e.detail._ne.lng,
+      },
     };
+    window["bounds"] = bounds;
     setBounds(bounds);
   };
 
   const onAirportClick = (e: CustomEvent<TAirport>) => {
-    Object.values(e.detail.ctrls).forEach(ctrl => {
+    Object.values(e.detail.controllers).forEach(ctrl => {
       if (ctrl) selectItem(ctrl);
     });
   };
@@ -123,7 +130,7 @@
       const icao = feat.properties.airport_icao;
       const airport = $airports.find(arpt => arpt.icao === icao);
       if (airport) {
-        selectItem(airport.ctrls.approach);
+        selectItem(airport.controllers.approach);
       }
     });
   };

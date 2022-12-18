@@ -7,7 +7,7 @@ export const setBounds = (bounds: MapBounds) => {
   api.setBounds(bounds);
 };
 
-export const radars = readable<{ [key: string]: Radar }>({}, (set) => {
+export const radars = readable<{ [key: string]: Radar }>({}, set => {
   let radars: { [key: string]: Radar } = {};
 
   const add = (objects: Radar[]) => {
@@ -22,7 +22,7 @@ export const radars = readable<{ [key: string]: Radar }>({}, (set) => {
   };
 
   const remove = (objects: Radar[]) => {
-    objects.forEach((radar) => {
+    objects.forEach(radar => {
       delete radars[radar.ctrl.callsign];
     });
     set(radars);
@@ -45,7 +45,7 @@ export const radars = readable<{ [key: string]: Radar }>({}, (set) => {
 export const radarsGeoJSON = derived<
   Readable<{ [key: string]: Radar }>,
   GeoJSON.FeatureCollection
->(radars, ($radars) => {
+>(radars, $radars => {
   const features: { [key: string]: GeoJSON.Feature } = {};
 
   Object.values($radars).forEach((radar: Radar) => {
@@ -58,8 +58,8 @@ export const radarsGeoJSON = derived<
           type: "Feature",
           geometry: {
             type: "MultiPolygon",
-            coordinates: fir.boundaries.points.map((pointset) => [
-              pointset.map((point) => [point.lng, point.lat]),
+            coordinates: fir.boundaries.points.map(pointset => [
+              pointset.map(point => [point.lng, point.lat]),
             ]),
           },
           properties: {
