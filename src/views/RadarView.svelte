@@ -22,8 +22,8 @@
     approachStrokePaint,
     planeClusterCount,
     planeClusterPaint,
-    radarsFillPaint,
-    radarsStrokePaint,
+    firsFillPaint,
+    firsStrokePaint,
     arrivalsFillPaint,
     runwaysFilter,
     arrivalsStrokePaint,
@@ -46,7 +46,7 @@
     arrivalGeoJSON,
     departureGeoJSON,
   } from "../stores/airports";
-  import { radars, radarsGeoJSON, setBounds } from "../stores/radars";
+  import { radars, firsGeoJSON, setBounds } from "../stores/radars";
 
   // proved to be the center of Europe
   let lat = 51.1657;
@@ -116,11 +116,11 @@
     });
   };
 
-  const onRadarClick = (e: CustomEvent<GeoJSON.FeatureCollection>) => {
+  const onFirClick = (e: CustomEvent<GeoJSON.FeatureCollection>) => {
     e.detail.features.forEach(feat => {
       const callsigns = JSON.parse(feat.properties.callsigns);
       callsigns.forEach(callsign => {
-        selectItem($radars[callsign].ctrl);
+        selectItem($radars[callsign]);
       });
     });
   };
@@ -135,18 +135,18 @@
     });
   };
 
-  const selectItem = (item: Controller | Pilot) => {
+  const selectItem = (object: Controller | Pilot) => {
     showSearch = false;
     if (selectionTimeout) {
       const alreadySelected = selected.some(
-        item => item.callsign === item.callsign
+        item => object.callsign === item.callsign
       );
 
       if (!alreadySelected) {
-        selected = [...selected, item];
+        selected = [...selected, object];
       }
     } else {
-      selected = [item];
+      selected = [object];
       selectionTimeout = window.setTimeout(() => {
         selectionTimeout = null;
       }, 50);
@@ -238,15 +238,15 @@
         />
       {/if}
     </MapboxGeojsonSource>
-    <MapboxGeojsonSource id="radars" data={$radarsGeoJSON}>
+    <MapboxGeojsonSource id="radars" data={$firsGeoJSON}>
       {#if showControllers}
         <MapboxLayer
           id="radars"
           type="fill"
-          paint={radarsFillPaint}
-          on:click={onRadarClick}
+          paint={firsFillPaint}
+          on:click={onFirClick}
         />
-        <MapboxLayer id="radars-stroke" type="line" paint={radarsStrokePaint} />
+        <MapboxLayer id="radars-stroke" type="line" paint={firsStrokePaint} />
       {/if}
     </MapboxGeojsonSource>
     <MapboxGeojsonSource id="approaches" data={$approachesGeoJSON}>

@@ -10,11 +10,11 @@ export const planeClusterCount = {
   "text-size": 14,
 };
 
-export const radarsFillPaint = {
+export const firsFillPaint = {
   "fill-color": "#333333",
   "fill-opacity": 0.2,
 };
-export const radarsStrokePaint = {
+export const firsStrokePaint = {
   "line-color": "#333333",
 };
 
@@ -62,7 +62,7 @@ export const rasterisePoly = (
 ): Position[] => {
   let current = point(start);
   const points: Feature<Point>[] = [current];
-  vectors.forEach((vector) => {
+  vectors.forEach(vector => {
     const next = destination(
       current.geometry.coordinates,
       vector.length,
@@ -74,7 +74,7 @@ export const rasterisePoly = (
   });
   points.push(point(start));
 
-  return points.map((point) => point.geometry.coordinates);
+  return points.map(point => point.geometry.coordinates);
 };
 
 export const ilsPoly = (
@@ -104,7 +104,7 @@ export const ilsPoly = (
     type: "Feature",
     geometry: {
       type: "Polygon",
-      coordinates: [points.map((point) => point.geometry.coordinates)],
+      coordinates: [points.map(point => point.geometry.coordinates)],
     },
   } as GeoJSON.Feature;
 };
@@ -141,7 +141,7 @@ export const departureArrows = (
     iter += step;
   }
 
-  return coordinates.map((cset) => ({
+  return coordinates.map(cset => ({
     type: "Feature",
     geometry: {
       type: "Polygon",

@@ -24,8 +24,8 @@ export type Controller = {
   name: string;
   human_readable: string;
   callsign: string;
-  frequency: number;
-  facility: number;
+  freq: number;
+  facility: string;
   rating: number;
   server: string;
   visual_range: number;
@@ -99,6 +99,7 @@ export type FIR = {
   name: string;
   prefix: string;
   boundaries: Boundaries;
+  controllers: Record<string, Controller>;
 };
 
 export type Boundaries = {

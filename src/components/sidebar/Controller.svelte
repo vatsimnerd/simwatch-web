@@ -4,39 +4,19 @@
   import type { Controller } from "../../types";
 
   export let ctrl: Controller;
-  let facility = "";
+  let frequency = "";
   let facilityClass = "";
   let atis: string[] | null;
   let online = "";
   let longSession = false;
 
   $: {
-    switch (ctrl.facility) {
-      case 1:
-        facility = "ATIS";
-        break;
-      case 2:
-        facility = "Delivery";
-        break;
-      case 3:
-        facility = "Ground";
-        break;
-      case 4:
-        facility = "Tower";
-        break;
-      case 5:
-        facility = "Approach";
-        break;
-      case 6:
-        facility = "Radar";
-        break;
-      default:
-        break;
-    }
-
     atis =
-      facility === "ATIS" && ctrl.text_atis ? ctrl.text_atis.split("\n") : null;
-    facilityClass = facility.toLowerCase();
+      ctrl.facility === "ATIS" && ctrl.text_atis
+        ? ctrl.text_atis.split("\n")
+        : null;
+    facilityClass = ctrl.facility.toLowerCase();
+    frequency = (ctrl.freq / 1000).toFixed(3);
   }
 
   const setOnline = () => {
@@ -62,7 +42,7 @@
   <h3 class="title">{ctrl.human_readable} <sub>{ctrl.name}</sub></h3>
   <h4 class="radio">
     <div class="callsign">{ctrl.callsign}</div>
-    <div class="freq">{ctrl.frequency.toFixed(3)}</div>
+    <div class="freq">{frequency}</div>
   </h4>
   {#if atis}
     <div class="atis-text">
