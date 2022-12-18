@@ -18,7 +18,7 @@
 
   $: if (popup) {
     const el = popup.querySelector("*");
-    popupContent = el.hasAttribute("touchdown-nopopup") ? null : el;
+    popupContent = el.hasAttribute("data-nopopup") ? null : el;
   }
 
   $: if (marker) {
@@ -77,7 +77,7 @@
   <slot />
   <div bind:this={popup} class="invisible">
     <slot name="popup">
-      <div />
+      <div data-nopopup />
     </slot>
   </div>
 </div>

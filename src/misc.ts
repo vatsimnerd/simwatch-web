@@ -74,3 +74,15 @@ export function mbEq(one: MapBounds, another: MapBounds): boolean {
     one.max.lng === another.max.lng
   );
 }
+
+export function sortBy<T>(slice: T[], key: keyof T) {
+  slice.sort((a, b) => {
+    if (a[key] > b[key]) {
+      return 1;
+    }
+    if (a[key] < b[key]) {
+      return -1;
+    }
+    return 0;
+  });
+}

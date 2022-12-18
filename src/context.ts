@@ -6,3 +6,9 @@ export const ctxSource = {};
 export type CtxMap = {
   getMap: () => Map;
 };
+
+export type CtxSource = {
+  getSourceID: () => string;
+  registerLayer: (id: string) => void;
+  unregisterLayer: (id: string) => void;
+};

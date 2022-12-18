@@ -1,11 +1,12 @@
-<script>
+<script lang="ts">
+  import type { AnyLayer } from "mapbox-gl";
   import { createEventDispatcher, getContext, onMount } from "svelte";
-  import { ctxMap, ctxSource } from "../context";
-  const map = getContext(ctxMap).getMap();
+  import { CtxMap, ctxMap, CtxSource, ctxSource } from "../context";
+  const map = getContext<CtxMap>(ctxMap).getMap();
   const dispatch = createEventDispatcher();
 
-  export let id;
-  export let type;
+  export let id: string;
+  export let type: string;
   export let paint = null;
   export let filter = null;
   export let layout = null;
@@ -19,23 +20,23 @@
     }
   }
 
-  const ctx = getContext(ctxSource);
+  const ctx = getContext<CtxSource>(ctxSource);
   const sourceID = ctx.getSourceID();
 
-  const onClick = (e) => {
+  const onClick = e => {
     dispatch("click", e);
   };
 
-  const onMouseEnter = (e) => {
+  const onMouseEnter = e => {
     dispatch("mouseenter", e);
   };
 
-  const onMouseLeave = (e) => {
+  const onMouseLeave = e => {
     dispatch("mouseleave", e);
   };
 
   onMount(() => {
-    const opts = {
+    const opts: Record<string, any> = {
       id,
       source: sourceID,
       type,
@@ -54,7 +55,7 @@
       opts.minzoom = minzoom;
     }
 
-    map.addLayer(opts);
+    map.addLayer(opts as AnyLayer);
     ctx.registerLayer(id);
     registered = true;
 

@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
   import { createEventDispatcher } from "svelte";
   import { RadarToggleType } from "../../types";
 
@@ -7,7 +7,7 @@
 
   const dispatch = createEventDispatcher();
 
-  const onClick = (cType) => {
+  const onClick = (cType: RadarToggleType) => {
     dispatch("toggle", { type: cType });
   };
 </script>

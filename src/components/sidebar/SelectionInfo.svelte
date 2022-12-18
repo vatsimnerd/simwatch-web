@@ -1,29 +1,35 @@
-<script>
+<script lang="ts">
   import Controller from "./Controller.svelte";
   import Pilot from "./Pilot.svelte";
-  export let selected;
-  let items;
+  import type {
+    Pilot as PilotType,
+    Controller as ControllerType,
+  } from "../../types";
+  import { sortBy } from "../../misc";
+  export let selected: (PilotType | ControllerType)[];
+  let pilots: PilotType[];
+  let controllers: ControllerType[];
 
   $: {
-    items = [...selected];
-    items.sort((a, b) => {
-      if (a.type === "aircraft" && b.type !== "aircraft") {
-        return -1;
-      } else if (a.type !== "aircraft" && b.type === "aircraft") {
-        return 1;
+    pilots = [];
+    controllers = [];
+    selected.forEach(item => {
+      if ("facility" in item) {
+        controllers.push(item);
       } else {
-        return 0;
+        pilots.push(item);
       }
     });
+    sortBy(pilots, "callsign");
+    sortBy(controllers, "callsign");
   }
 </script>
 
 <div class="selection-info">
-  {#each items as item (item.callsign)}
-    {#if item.facility}
-      <Controller ctrl={item} />
-    {:else}
-      <Pilot pilot={item} />
-    {/if}
+  {#each controllers as item (item.callsign)}
+    <Controller ctrl={item} />
+  {/each}
+  {#each pilots as item (item.callsign)}
+    <Pilot pilot={item} />
   {/each}
 </div>
