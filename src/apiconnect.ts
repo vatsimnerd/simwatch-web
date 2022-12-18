@@ -92,7 +92,9 @@ class APIConnect {
   }
 
   async getPilot(callsign: string): Promise<Pilot> {
-    return await Axios.get<any, Pilot>(`/api/pilots/${callsign}`);
+    return await Axios.get<Pilot, any>(`/api/pilots/${callsign}`).then(
+      resp => resp.data
+    );
   }
 
   private emit(evName: APIConnectEvent, ...args: any[]) {
