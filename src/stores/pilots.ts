@@ -93,8 +93,9 @@ export const pilotsGeoJSON = derived<
     const pilot = $pilots[callsign];
     let rotation = pilot.heading - 90;
 
-    const atype = pilot.aircraft_type ? pilot.aircraft_type.engine_type : "Jet";
-
+    const atype = pilot.aircraft_type
+      ? pilot.aircraft_type[0].engine_type
+      : "Jet";
     let icon = "airplane_jet";
     let size = 0.1;
     if (atype !== "Jet") {
