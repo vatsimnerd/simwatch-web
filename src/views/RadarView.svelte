@@ -11,7 +11,7 @@
   import RadarToggle from "../components/controls/RadarToggle.svelte";
 
   import {
-    MapBounds,
+    MapBoundsEx,
     Controller,
     Pilot,
     Airport as TAirport,
@@ -96,16 +96,7 @@
   };
 
   const onBounds = (e: CustomEvent) => {
-    const bounds: MapBounds = {
-      min: {
-        lat: e.detail._sw.lat,
-        lng: e.detail._sw.lng,
-      },
-      max: {
-        lat: e.detail._ne.lat,
-        lng: e.detail._ne.lng,
-      },
-    };
+    const { bounds } = e.detail;
     window["bounds"] = bounds;
     setBounds(bounds);
   };

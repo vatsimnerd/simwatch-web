@@ -14,6 +14,7 @@
     __MAPTILER_KEY__,
     __MAPTILER_STYLE__,
   } from "../secrets";
+  import type { MapBoundsEx } from "../types";
 
   const maptilerStyleURL = `${__MAPTILER_STYLE__}?key=${__MAPTILER_KEY__}`;
 
@@ -38,7 +39,7 @@
   $: setZoom(zoom);
   $: setCenter(lng, lat);
 
-  const setZoom = (zoom) => {
+  const setZoom = zoom => {
     proxy = {
       ...proxy,
       zoom,
@@ -77,7 +78,19 @@
   const onBounds = () => {
     if (!map) return;
     const bounds = map.getBounds();
-    dispatch("bounds", bounds);
+    const zoom = map.getZoom();
+    const bounds_ex: MapBoundsEx = {
+      min: {
+        lat: bounds._sw.lat,
+        lng: bounds._sw.lng,
+      },
+      max: {
+        lat: bounds._ne.lat,
+        lng: bounds._ne.lng,
+      },
+      zoom,
+    };
+    dispatch("bounds", { bounds: bounds_ex });
   };
 
   const onZoomEnd = () => {
@@ -123,8 +136,8 @@
         })
       );
     }
-    Promise.all(promises).then((values) => {
-      values.forEach((value) => {
+    Promise.all(promises).then(values => {
+      values.forEach(value => {
         map.addImage(value.name, value.image);
       });
     });

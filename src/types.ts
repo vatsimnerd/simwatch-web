@@ -3,10 +3,14 @@ export type Point = {
   lng: number;
 };
 
-export type MapBounds = {
+export interface MapBounds {
   min: Point;
   max: Point;
-};
+}
+
+export interface MapBoundsEx extends MapBounds {
+  zoom: number;
+}
 
 export type Airport = {
   icao: string;
@@ -163,16 +167,17 @@ export type APIConnectState = {
 export type APIConnectServerUpdate = {
   connection_id: string;
   message_type: string;
+  object_type: string;
   data: {
-    set: {
-      pilots: Pilot[];
-      airports: Airport[];
-      firs: FIR[];
+    set?: {
+      pilots?: Pilot[];
+      airports?: Airport[];
+      firs?: FIR[];
     };
-    delete: {
-      pilots: Pilot[];
-      airports: Airport[];
-      firs: FIR[];
+    delete?: {
+      pilots?: Pilot[];
+      airports?: Airport[];
+      firs?: FIR[];
     };
   };
 };

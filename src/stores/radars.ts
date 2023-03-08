@@ -1,9 +1,9 @@
 import type { Readable } from "svelte/store";
 import { derived, readable } from "svelte/store";
 import { api } from "../apiconnect";
-import type { FIR, MapBounds, Controller } from "../types";
+import type { FIR, MapBoundsEx, Controller } from "../types";
 
-export const setBounds = (bounds: MapBounds) => {
+export const setBounds = (bounds: MapBoundsEx) => {
   api.setBounds(bounds);
 };
 

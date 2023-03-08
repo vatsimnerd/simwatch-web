@@ -1,5 +1,5 @@
 import type {
-  MapBounds,
+  MapBoundsEx,
   APIConnectEvent,
   APIConnectHandler,
   APIConnectState,
@@ -12,7 +12,7 @@ import { mbEq } from "./misc";
 class APIConnect {
   private handlers: Record<APIConnectEvent, APIConnectHandler[]>;
   private es: EventSource | null = null;
-  private bounds: MapBounds | null = null;
+  private bounds: MapBoundsEx | null = null;
   private pFilter: string | null = null;
   private subIds: Set<string>;
   private state: APIConnectState;
@@ -62,7 +62,7 @@ class APIConnect {
     }
   }
 
-  setBounds(bounds: MapBounds) {
+  setBounds(bounds: MapBoundsEx) {
     if (this.bounds && mbEq(bounds, this.bounds)) return;
     this.bounds = bounds;
     this._reconnect();
@@ -151,62 +151,65 @@ class APIConnect {
 
       // let's collect what we got from server
       const pilot_ids = new Set(
-        update.data.set.pilots.map(pilot => pilot.callsign)
+        update.data.set?.pilots?.map(pilot => pilot.callsign) || []
       );
       const airport_ids = new Set(
-        update.data.set.airports.map(arpt => `${arpt.icao}:${arpt.iata}`)
+        update.data.set?.airports?.map(arpt => `${arpt.icao}:${arpt.iata}`) ||
+          []
       );
-      const fir_ids = new Set(update.data.set.firs.map(fir => fir.icao));
+      const fir_ids = new Set(
+        update.data.set?.firs?.map(fir => fir.icao) || []
+      );
 
       Object.entries(this.state.pilots).forEach(([callsign, pilot]) => {
         if (!pilot_ids.has(callsign)) {
-          update.data.delete.pilots.push(pilot);
+          update.data.delete?.pilots?.push(pilot);
         }
       });
       Object.entries(this.state.airports).forEach(([code, airport]) => {
         if (!airport_ids.has(code)) {
-          update.data.delete.airports.push(airport);
+          update.data.delete?.airports?.push(airport);
         }
       });
       Object.entries(this.state.firs).forEach(([id, fir]) => {
         if (!fir_ids.has(id)) {
-          update.data.delete.firs.push(fir);
+          update.data.delete?.firs?.push(fir);
         }
       });
     }
 
-    update.data.set.pilots.forEach(pilot => {
+    update.data.set?.pilots?.forEach(pilot => {
       this.state.pilots[pilot.callsign] = pilot;
     });
-    update.data.delete.pilots.forEach(pilot => {
+    update.data.delete?.pilots?.forEach(pilot => {
       delete this.state.pilots[pilot.callsign];
     });
 
-    update.data.set.airports.forEach(arpt => {
+    update.data.set?.airports?.forEach(arpt => {
       this.state.airports[`${arpt.icao}:${arpt.iata}`] = arpt;
     });
-    update.data.delete.airports.forEach(arpt => {
+    update.data.delete?.airports?.forEach(arpt => {
       delete this.state.airports[`${arpt.icao}:${arpt.iata}`];
     });
 
-    update.data.set.firs.forEach(fir => {
+    update.data.set?.firs?.forEach(fir => {
       this.state.firs[fir.icao] = fir;
     });
-    update.data.delete.firs.forEach(fir => {
+    update.data.delete?.firs?.forEach(fir => {
       delete this.state.firs[fir.icao];
     });
 
-    if (update.data.set.pilots.length > 0)
+    if (update.data.set?.pilots?.length > 0)
       this.emit("set-pilots", update.data.set.pilots);
-    if (update.data.delete.pilots.length > 0)
+    if (update.data.delete?.pilots?.length > 0)
       this.emit("del-pilots", update.data.delete.pilots);
-    if (update.data.set.airports.length > 0)
+    if (update.data.set?.airports?.length > 0)
       this.emit("set-airports", update.data.set.airports);
-    if (update.data.delete.airports.length > 0)
+    if (update.data.delete?.airports?.length > 0)
       this.emit("del-airports", update.data.delete.airports);
-    if (update.data.set.firs.length > 0)
+    if (update.data.set?.firs?.length > 0)
       this.emit("set-firs", update.data.set.firs);
-    if (update.data.delete.firs.length > 0)
+    if (update.data.delete?.firs?.length > 0)
       this.emit("del-firs", update.data.delete.firs);
   }
 
@@ -229,8 +232,8 @@ class APIConnect {
   }
 
   private genURL() {
-    const { min, max } = this.bounds;
-    const path = `/api/updates/${min.lng}/${min.lat}/${max.lng}/${max.lat}`;
+    const { min, max, zoom } = this.bounds;
+    const path = `/api/updates/${min.lng}/${min.lat}/${max.lng}/${max.lat}/${zoom}`;
     const usp = new URLSearchParams();
     if (this.pFilter) {
       usp.set("query", this.pFilter);

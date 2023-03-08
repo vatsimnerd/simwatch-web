@@ -1,4 +1,4 @@
-import type { MapBounds } from "./types";
+import type { MapBoundsEx } from "./types";
 
 export type Handler = (...args: any[]) => void;
 export type HandlerFilter = (...args: any[]) => boolean;
@@ -66,12 +66,13 @@ export const formatDuration = (secs: number) => {
   return `${hrsStr}:${minsStr}`;
 };
 
-export function mbEq(one: MapBounds, another: MapBounds): boolean {
+export function mbEq(one: MapBoundsEx, another: MapBoundsEx): boolean {
   return (
     one.min.lat === another.min.lat &&
     one.min.lng === another.min.lng &&
     one.max.lat === another.max.lat &&
-    one.max.lng === another.max.lng
+    one.max.lng === another.max.lng &&
+    one.zoom === another.zoom
   );
 }
 
