@@ -14,6 +14,7 @@ class APIConnect {
   private es: EventSource | null = null;
   private bounds: MapBoundsEx | null = null;
   private pFilter: string | null = null;
+  private showWx: boolean = false;
   private subIds: Set<string>;
   private state: APIConnectState;
   private reconnecting = false;
@@ -65,6 +66,11 @@ class APIConnect {
   setBounds(bounds: MapBoundsEx) {
     if (this.bounds && mbEq(bounds, this.bounds)) return;
     this.bounds = bounds;
+    this._reconnect();
+  }
+
+  setWeather(value: boolean) {
+    this.showWx = value;
     this._reconnect();
   }
 
@@ -161,6 +167,14 @@ class APIConnect {
         update.data.set?.firs?.map(fir => fir.icao) || []
       );
 
+      if (!update.data.delete) {
+        update.data.delete = {
+          pilots: [],
+          airports: [],
+          firs: [],
+        };
+      }
+
       Object.entries(this.state.pilots).forEach(([callsign, pilot]) => {
         if (!pilot_ids.has(callsign)) {
           update.data.delete?.pilots?.push(pilot);
@@ -237,6 +251,9 @@ class APIConnect {
     const usp = new URLSearchParams();
     if (this.pFilter) {
       usp.set("query", this.pFilter);
+    }
+    if (this.showWx) {
+      usp.set("show_wx", "true");
     }
     const qs = Array.from(usp).length > 0 ? `?${usp.toString()}` : "";
     return `${path}${qs}`;

@@ -12,6 +12,19 @@ export interface MapBoundsEx extends MapBounds {
   zoom: number;
 }
 
+export type WeatherInfo = {
+  callsign?: string;
+  raw: string;
+  dew_point: number;
+  temperature: number;
+  wind_direction: number | string;
+  wind_gust: number | null;
+  wind_speed: number;
+  side_wind_to?: number;
+  side_wind_lnd?: number;
+  ts: string;
+};
+
 export type Airport = {
   icao: string;
   iata: string;
@@ -21,6 +34,7 @@ export type Airport = {
   is_pseudo: boolean;
   controllers: ControllerSet;
   runways: { [key: string]: Runway };
+  wx: WeatherInfo | null;
 };
 
 export type Controller = {
@@ -145,6 +159,7 @@ export type Runway = {
 export enum RadarToggleType {
   PILOTS,
   ATC,
+  WX,
 }
 
 export type APIConnectHandler = (args: any) => void;

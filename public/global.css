@@ -168,8 +168,28 @@ td.pre {
   text-align: left !important;
 }
 
-.controller {
+.controller,
+.weather-info {
   padding: 4px;
+}
+
+.weather-info {
+  background-color: rgba(255, 255, 255, 0.5);
+  border-bottom: 1px solid #eee;
+  margin-bottom: 8px;
+}
+
+.weather-info.calm {
+  background-color: #f0fff0;
+}
+.weather-info.light {
+  background-color: #fffff0;
+}
+.weather-info.strong {
+  background-color: #fbe8b3;
+}
+.weather-info.severe {
+  background-color: #ffe0e0;
 }
 
 .controller.ground {
@@ -355,4 +375,13 @@ aside.sidebar .sidebar-close {
 
 .pilot .title {
   font-weight: 600;
+}
+
+.metar-table {
+  width: 100%;
+}
+
+.metar-table td:last-child {
+  text-align: right;
+  width: 80px;
 }

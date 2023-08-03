@@ -2,7 +2,16 @@
   import type { Airport } from "../types";
   import { createEventDispatcher } from "svelte";
   import MapboxMarker from "./MapboxMarker.svelte";
+  import { estimateWindSpeed, WindSpeed } from "../weather";
   export let airport: Airport;
+
+  let ws: WindSpeed | null = null;
+
+  $: {
+    if (airport.wx) {
+      ws = estimateWindSpeed(airport.wx.side_wind_lnd, airport.wx.side_wind_to);
+    }
+  }
 
   const dispatch = createEventDispatcher<{ click: Airport }>();
   const onClick = () => {
@@ -24,6 +33,15 @@
     {/if}
     {#if airport.controllers.atis}
       <div class="arpt-mrk-facility arpt-mrk-atis" />
+    {/if}
+    {#if airport.wx}
+      <div
+        class="arpt-mrk-facility arpt-mrk-wx"
+        class:calm={ws === WindSpeed.CALM}
+        class:light={ws === WindSpeed.LIGHT}
+        class:strong={ws === WindSpeed.STRONG}
+        class:severe={ws === WindSpeed.SEVERE}
+      />
     {/if}
   </div>
 </MapboxMarker>
@@ -91,5 +109,39 @@
   }
   .arpt-mrk-gnd::before {
     content: "G";
+  }
+
+  .arpt-mrk-wx {
+    width: 16px;
+  }
+
+  .arpt-mrk-wx.calm {
+    background-color: white;
+    color: #444;
+  }
+
+  .arpt-mrk-wx.light {
+    background-color: #d0d0d0;
+    color: #444;
+  }
+
+  .arpt-mrk-wx.strong {
+    background-color: #fac447;
+    color: #444;
+  }
+
+  .arpt-mrk-wx.severe {
+    background-color: #cc0000;
+    color: white;
+  }
+
+  .arpt-mrk-wx::before {
+    content: "\f185";
+
+    font-family: "Font Awesome 5 Free";
+    font-size: 0.7rem;
+    font-weight: bold;
+    position: relative;
+    left: -1.6px;
   }
 </style>

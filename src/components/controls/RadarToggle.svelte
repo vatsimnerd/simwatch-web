@@ -4,6 +4,7 @@
 
   export let showAircraft = true;
   export let showControllers = true;
+  export let showWx = false;
 
   const dispatch = createEventDispatcher();
 
@@ -26,5 +27,13 @@
     class:active={showControllers}
   >
     <i class="fas fa-broadcast-tower" />
+  </button>
+
+  <button
+    on:click={() => onClick(RadarToggleType.WX)}
+    class="btn btn-outline-dark"
+    class:active={showWx}
+  >
+    <i class="far fa-sun" />
   </button>
 </div>

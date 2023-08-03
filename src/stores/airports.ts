@@ -1,8 +1,13 @@
-import { derived, Readable, readable, Subscriber } from "svelte/store";
-import type { Airport } from "../types";
-import { api } from "../apiconnect";
 import circle from "@turf/circle";
+import { derived, Readable, readable, Subscriber } from "svelte/store";
+import { api } from "../apiconnect";
 import { departureArrows, ilsPoly } from "../maplib";
+import type { Airport } from "../types";
+import { processWeather } from "../weather";
+
+export const setWeather = (value: boolean) => {
+  api.setWeather(value);
+};
 
 export const airports = readable<Airport[]>(
   [],
@@ -10,6 +15,7 @@ export const airports = readable<Airport[]>(
     let airports = {};
 
     const add = (objects: Airport[]) => {
+      objects = objects.map(obj => processWeather(obj));
       airports = {
         ...airports,
         ...objects.reduce<{ [key: string]: Airport }>((acc, item) => {

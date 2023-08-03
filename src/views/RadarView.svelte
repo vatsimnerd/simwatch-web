@@ -11,11 +11,11 @@
   import RadarToggle from "../components/controls/RadarToggle.svelte";
 
   import {
-    MapBoundsEx,
     Controller,
     Pilot,
     Airport as TAirport,
     RadarToggleType,
+    WeatherInfo,
   } from "../types";
   import {
     approachFillPaint,
@@ -45,6 +45,7 @@
     approachesGeoJSON,
     arrivalGeoJSON,
     departureGeoJSON,
+    setWeather,
   } from "../stores/airports";
   import { radars, firsGeoJSON, setBounds } from "../stores/radars";
 
@@ -55,9 +56,10 @@
 
   let showSearch = false;
   let selectionTimeout: number = null;
-  let selected: (Controller | Pilot)[] = null;
+  let selected: (Controller | Pilot | WeatherInfo)[] = null;
   let showAircraft = true;
   let showControllers = true;
+  let showWx = false;
   let hovered: Pilot = null;
   let searchClasses = "btn btn-outline-dark";
 
@@ -105,6 +107,9 @@
     Object.values(e.detail.controllers).forEach(ctrl => {
       if (ctrl) selectItem(ctrl);
     });
+    if (e.detail.wx) {
+      selectItem(e.detail.wx);
+    }
   };
 
   const onFirClick = (e: CustomEvent<GeoJSON.FeatureCollection>) => {
@@ -126,7 +131,7 @@
     });
   };
 
-  const selectItem = (object: Controller | Pilot) => {
+  const selectItem = (object: Controller | Pilot | WeatherInfo) => {
     showSearch = false;
     if (selectionTimeout) {
       const alreadySelected = selected.some(
@@ -153,6 +158,9 @@
       case RadarToggleType.ATC:
         showControllers = !showControllers;
         break;
+      case RadarToggleType.WX:
+        showWx = !showWx;
+        break;
     }
   };
 
@@ -170,6 +178,10 @@
       $planeFilter === null
         ? "btn btn-outline-dark"
         : "btn btn-outline-primary";
+  }
+
+  $: {
+    setWeather(showWx);
   }
 </script>
 
@@ -298,7 +310,12 @@
       </button>
     </div>
     <div>
-      <RadarToggle on:toggle={onCtrlToggle} {showAircraft} {showControllers} />
+      <RadarToggle
+        on:toggle={onCtrlToggle}
+        {showAircraft}
+        {showControllers}
+        {showWx}
+      />
     </div>
   </div>
 
